@@ -28,20 +28,19 @@ def helper(res, level, test_skeleton, return_value)
       if res.any? and res.first.first == :def
         level[0] == :def
         test_skeleton[0] += ' ' * 2 + "describe '.#{res.first[1]}' do\n"
-        res = res.first
-        res.shift # remove :def
-        res.shift # remove method name
-        res.shift # remove method params (?)
-        helper(res, level, test_skeleton, return_value)
+        # res = res.first
+        res.first.shift # remove :def
+        res.first.shift # remove method name
+        res.first.shift # remove method params (?)
+        helper(res.first, level, test_skeleton, return_value)
         level[0] == :def
       end
 
       if res.any? and (res.first.first == :begin or res.first.first == :block)
-        res = res.first
-        res.shift # remove :begin or :block
-        helper(res, level, test_skeleton, return_value)
+        # res = res.first
+        res.first.shift # remove :begin or :block
+        helper(res.first, level, test_skeleton, return_value)
       end
-    # binding.pry
       
       if res.any? and res.first.first == :if
         level[0] == :context
@@ -59,7 +58,6 @@ def helper(res, level, test_skeleton, return_value)
         res.shift
         next
       end
-    # binding.pry
 
       if res.any? and res.first.first == :lvar and level[0] == :def
         return_value[0] = res.first.last.to_s
@@ -67,9 +65,7 @@ def helper(res, level, test_skeleton, return_value)
         next
       end
     end
-    # binding.pry
     res.shift
-    # binding.pry
   end
 end
 
