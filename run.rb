@@ -6,6 +6,9 @@ KEY_WORDS = %i(
   send
   lvar
   include?
+  nil?
+  any?
+  empty?
   send
   next
 )
@@ -45,12 +48,14 @@ def helper(res, level, test_skeleton, return_value)
       if res.any? and res.first.first == :if
         level[0] == :context
         test_skeleton[0] += ' ' * 4 + "context 'when "
-        res.first.flatten!
-        res.first.each do |item|
+        # res.first.flatten!
+        res.first[1].flatten.each do |item|
           unless KEY_WORDS.include? item
-            test_skeleton[0] += "#{item}-"
+            test_skeleton[0] += "#{item} "
           end
+          test_skeleton[0] += "is #{item}".chomp('?') if item.to_s.end_with? '?'
         end
+        test_skeleton[0].rstrip!
         test_skeleton[0] += "' do\n"
         test_skeleton[0] += ' ' * 6 + "it 'returns #{return_value}'\n"
         test_skeleton[0] += ' ' * 8 + "# Write your test here!\n\n"
@@ -61,6 +66,7 @@ def helper(res, level, test_skeleton, return_value)
 
       if res.any? and res.first.first == :lvar and level[0] == :def
         return_value[0] = res.first.last.to_s
+        puts "return value: #{return_value[0]}"
         res.shift
         next
       end
